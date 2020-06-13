@@ -17,9 +17,9 @@ export class AppComponent {
       icon: 'home'
     },
     {
-      title: 'Añadir',
-      url: '/create',
-      icon: 'add'
+      title: 'List',
+      url: '/list',
+      icon: 'list'
     }
   ];
 

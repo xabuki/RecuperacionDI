@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { DiscodbService } from '../core/discodb.service';
+import { DiscotecadbService } from '../core/discotecadbservice.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastController } from '@ionic/angular';
-import { IDisco } from '../share/interfaces';
+import { IDiscoteca } from '../share/interfaces';
 
 @Component({
   selector: 'app-edit',
@@ -11,64 +11,44 @@ import { IDisco } from '../share/interfaces';
   styleUrls: ['./edit.page.scss'],
 })
 export class EditPage implements OnInit {
-
-  id: number;
-  public disco: IDisco;
-  discoForm: FormGroup;
-  errorMessage: string;
-
+  id: string;
+  discoteca: IDiscoteca;
+  discotecaForm: FormGroup;
   constructor(
-    private activatedroute: ActivatedRoute,
+    private activatedrouter: ActivatedRoute,
     private router: Router,
-    private discodbService: DiscodbService,
-    public toastController: ToastController) { }
-
+    private discotecadbService: DiscotecadbService,
+    public toastController: ToastController
+  ) { }
   ngOnInit() {
-    this.discoForm = new FormGroup({
-      nombre: new FormControl(''),
-      image: new FormControl(''),
-      numEntradas: new FormControl(''),
-      precio: new FormControl(''),
-    });
-    this.id = parseInt(this.activatedroute.snapshot.params['id']);
-    this.getDisco(this.id);
-
-  }
-
-  getDisco(id: number): void {
-    this.discodbService.getDiscoById(id)
-      .subscribe(
-        (disco: IDisco) => this.displayDisco(disco),
-        (error: any) => this.errorMessage = <any>error
-      );
-  }
-
-  displayDisco(disco: IDisco): void {
-    if (this.discoForm) {
-      this.discoForm.reset();
-    }
-    this.disco = disco;
-
-    // Update the data on the form
-    this.discoForm.patchValue({
-      nombre: this.disco.nombre,
-      image: this.disco.image,
-      numEntradas: this.disco.numEntradas,
-      precio: this.disco.precio
+    this.id = this.activatedrouter.snapshot.params.id;
+    this.discotecadbService.getItem(this.id).then(
+      (data: IDiscoteca) => {
+        this.discoteca = data
+        this.discotecaForm.get('name').setValue(this.discoteca.name);
+        this.discotecaForm.get('cover').setValue(this.discoteca.cover);
+        this.discotecaForm.get('description').setValue(this.discoteca.description);
+      }
+    );
+    this.discotecaForm = new FormGroup({
+      name: new FormControl(''),
+      genre: new FormControl(''),
+      date: new FormControl(''),
+      cover: new FormControl(''),
+      description: new FormControl(''),
     });
   }
-
   async onSubmit() {
     const toast = await this.toastController.create({
-      header: 'Editar Discoteca',
+      header: 'Guardar discoteca',
       position: 'top',
       buttons: [
         {
           side: 'start',
-          icon: 'create',
+          icon: 'save',
           text: 'ACEPTAR',
           handler: () => {
-            this.editDisco();
+            this.saveDiscoteca();
             this.router.navigate(['home']);
           }
         }, {
@@ -82,58 +62,12 @@ export class EditPage implements OnInit {
     });
     toast.present();
   }
-
-
-  editDisco() {
-    if (this.discoForm.valid) {
-      if (this.discoForm.dirty) {
-        this.disco = this.discoForm.value;
-        this.disco.id = this.id;
-
-        this.discodbService.updateDisco(this.disco)
-          .subscribe(
-            () => this.onSaveComplete(),
-            (error: any) => this.errorMessage = <any>error
-          );
-
-
-      } else {
-        this.onSaveComplete();
-      }
-    } else {
-      this.errorMessage = 'Please correct the validation errors.';
-    }
-  }
-
-  onSaveComplete(): void {
-    // Reset the form to clear the flags
-    this.discoForm.reset();
-    this.router.navigate(['']);
-  }
-  async removeRecord(id) {
-    const toast = await this.toastController.create({
-      header: 'Eliminar Discoteca',
-      position: 'top',
-      buttons: [
-        {
-          side: 'start',
-          icon: 'delete',
-          text: 'ACEPTAR',
-          handler: () => {
-            this.discodbService.deleteDisco(id).subscribe(
-              () => this.onSaveComplete(),
-              (error: any) => this.errorMessage = <any>error
-            );
-          }
-        }, {
-          text: 'CANCELAR',
-          role: 'cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
-        }
-      ]
-    });
-    toast.present();
+  saveDiscoteca() {
+    this.discotecadbService.remove(this.id);
+    this.discoteca = this.discotecaForm.value;
+    let nextKey = this.discoteca.name.trim();
+    this.discoteca.id = nextKey;
+    this.discotecadbService.setItem(nextKey, this.discoteca);
+    console.warn(this.discotecaForm.value);
   }
 }

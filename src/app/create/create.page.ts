@@ -1,38 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { DiscodbService } from '../core/discodb.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { DiscotecadbService } from '../core/discotecadbservice.service';
+import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
-import { IDisco } from '../share/interfaces';
-
-
+import { IDiscoteca } from '../share/interfaces';
 @Component({
   selector: 'app-create',
   templateUrl: './create.page.html',
   styleUrls: ['./create.page.scss'],
 })
 export class CreatePage implements OnInit {
-
-  disco: IDisco;
-  discoForm: FormGroup;
-  errorMessage: string;
-  id:number;
-
-  constructor(private router: Router,
-    private discodbService: DiscodbService,
-    private activatedroute: ActivatedRoute,
-    public toastController: ToastController) { }
-
+  discoteca: IDiscoteca;
+ discotecaForm: FormGroup;
+  constructor(
+    private router: Router,
+    private discotecadbService: DiscotecadbService,
+    public toastController: ToastController
+  ) { }
   ngOnInit() {
-    this.discoForm = new FormGroup({
-      nombre: new FormControl(''),
-      image: new FormControl(''),
-      numEntradas: new FormControl(''),
-      precio: new FormControl(''),
+    this.discotecaForm = new FormGroup({
+      name: new FormControl(''),
+      cover: new FormControl(''),
+      description: new FormControl(''),
     });
-    this.id = parseInt(this.activatedroute.snapshot.params['productId']);
-  }
-  async onSubmit() {
+  } async onSubmit() {
     const toast = await this.toastController.create({
       header: 'Guardar Discoteca',
       position: 'top',
@@ -42,7 +33,7 @@ export class CreatePage implements OnInit {
           icon: 'save',
           text: 'ACEPTAR',
           handler: () => {
-            this.saveDisco();
+            this.saveDiscoteca();
             this.router.navigate(['home']);
           }
         }, {
@@ -56,31 +47,11 @@ export class CreatePage implements OnInit {
     });
     toast.present();
   }
-  saveDisco() {
-    if (this.discoForm.valid) {
-      if (this.discoForm.dirty) {
-        this.disco = this.discoForm.value;
-        this.disco.id = this.id;
-        
-        this.discodbService.createDisco(this.disco)
-          .subscribe(
-            () => this.onSaveComplete(),
-            (error: any) => this.errorMessage = <any>error
-          );
-        
-      } else {
-        this.onSaveComplete();
-      }
-    } else {
-      this.errorMessage = 'Please correct the validation errors.';
-    }
-  }
-  onSaveComplete(): void {
-    
-    // Reset the form to clear the flags
-    this.discoForm.reset();
-    this.router.navigate(['']);
+  saveDiscoteca() {
+    this.discoteca = this.discotecaForm.value;
+    let nextKey = this.discoteca.name.trim();
+    this.discoteca.id = nextKey;
+    this.discotecadbService.setItem(nextKey, this.discoteca);
+    console.warn(this.discotecaForm.value);
   }
 }
-
-

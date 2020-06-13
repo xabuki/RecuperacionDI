@@ -8,12 +8,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { DiscoData } from './core/disco-data';
-import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
-import { DiscodbService } from './core/discodb.service';
-
+import { IonicStorageModule } from '@ionic/storage';
 
 @NgModule({
   declarations: [AppComponent],
@@ -21,14 +16,10 @@ import { DiscodbService } from './core/discodb.service';
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
-    AppRoutingModule,
-    ReactiveFormsModule,
-    FormsModule,
-    HttpClientModule,
-    InMemoryWebApiModule.forRoot(DiscoData)
+    IonicStorageModule.forRoot(),
+    AppRoutingModule
   ],
   providers: [
-    DiscodbService,
     StatusBar,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
