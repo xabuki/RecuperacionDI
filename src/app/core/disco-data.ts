@@ -6,24 +6,24 @@ export class DiscoData implements InMemoryDbService {
     let discos = [
       {
         id: 1,
-        nombre: "Discoteca1",
+        nombre: "Indara",
         image: "",
-        numEntradas: 5,
-        precio: 2000
+        numEntradas: 58,
+        precio: 10
       },
       {
         id: 2,
-        nombre: "Discoteca2",
+        nombre: "klabe",
         image: "",
-        numEntradas: 3,
-        precio: 1790
+        numEntradas: 80,
+        precio: 5
       },
       {
         id: 3,
-        nombre: "Discoteca3",
+        nombre: "Totem",
         image: "",
-        numEntradas: 5,
-        precio: 1874
+        numEntradas: 70,
+        precio: 7
       }
     ];
     return { discos: discos };
