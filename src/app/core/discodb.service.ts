@@ -1,27 +1,29 @@
+import { IDisco } from '../share/interfaces';
 import { Injectable } from '@angular/core';
-import { IDiscoteca } from '../share/interfaces';
 import { Storage } from '@ionic/storage';
 @Injectable({
   providedIn: 'root'
 })
-export class DiscotecadbService {
-  auxMovie: IDiscoteca;
-  auxMovieList: IDiscoteca[] = [];
+export class DiscodbService {
+  auxDisco: IDisco;
+  auxDiscoList: IDisco[] = [];
   constructor(private storage: Storage) { }
   // Stores a value
-  setItem(reference: string, value: IDiscoteca) {
+  setItem(reference: string, value: IDisco) {
     this.storage.set(reference, {
-      id: value.id, name: value.name, 
-       cover: value.cover, description:
-        value.description
+      id: value.id,
+      nombre: value.nombre,
+      image: value.image,
+      numEntradas: value.numEntradas,
+      precio:value.precio
     })
       .then(
-        (data) => console.log('Se guardo la discoteca', data),
-        error => console.error('Error al guardar discoteca', error)
+        (data) => console.log('Stored first item!', data),
+        error => console.error('Error storing item', error)
       );
   }
   // Gets a stored item
-  getItem(reference): Promise<IDiscoteca> {
+  getItem(reference): Promise<IDisco> {
     return this.storage.get(reference);
   }
   // check if it is empty
@@ -37,14 +39,14 @@ export class DiscotecadbService {
     return this.storage.keys();
   }
   // Retrieving all values
-  getAll(): Promise<IDiscoteca[]> {
+  getAll(): Promise<IDisco[]> {
     return this.storage.keys().then((k) => {
       k.forEach(element => {
         this.getItem(element).then(
-          (data: IDiscoteca) => this.auxMovieList.push(data)
+          (data: IDisco) => this.auxDiscoList.push(data)
         );
       });
-      return this.auxMovieList;
+      return this.auxDiscoList;
     });
   }
   // Removes a single stored item
@@ -63,4 +65,5 @@ export class DiscotecadbService {
         error => console.error(error)
       );
   }
+
 }

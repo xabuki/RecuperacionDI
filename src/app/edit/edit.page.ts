@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { DiscotecadbService } from '../core/discotecadbservice.service';
+import { DiscodbService } from '../core/discodb.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastController } from '@ionic/angular';
-import { IDiscoteca } from '../share/interfaces';
+import { IDisco } from '../share/interfaces';
 
 @Component({
   selector: 'app-edit',
@@ -11,44 +11,59 @@ import { IDiscoteca } from '../share/interfaces';
   styleUrls: ['./edit.page.scss'],
 })
 export class EditPage implements OnInit {
+
   id: string;
-  discoteca: IDiscoteca;
-  discotecaForm: FormGroup;
+  public disco: IDisco;
+  discoForm: FormGroup;
+
   constructor(
     private activatedrouter: ActivatedRoute,
     private router: Router,
-    private discotecadbService: DiscotecadbService,
-    public toastController: ToastController
-  ) { }
+    private discodbService: DiscodbService,
+    public toastController: ToastController) { }
+
   ngOnInit() {
     this.id = this.activatedrouter.snapshot.params.id;
-    this.discotecadbService.getItem(this.id).then(
-      (data: IDiscoteca) => {
-        this.discoteca = data
-        this.discotecaForm.get('name').setValue(this.discoteca.name);
-        this.discotecaForm.get('cover').setValue(this.discoteca.cover);
-        this.discotecaForm.get('description').setValue(this.discoteca.description);
-      }
-    );
-    this.discotecaForm = new FormGroup({
-      name: new FormControl(''),
-      genre: new FormControl(''),
-      date: new FormControl(''),
-      cover: new FormControl(''),
-      description: new FormControl(''),
+    this.discodbService.getItem(this.id).then(
+      (data: IDisco) => {
+        this.disco = data;
+        this.displayProduct(this.disco);
+      });
+    this.discoForm = new FormGroup({
+      nombre: new FormControl(''),
+      image: new FormControl(''),
+      numEntradas: new FormControl(''),
+      precio: new FormControl(''),
+    });
+  
+  }
+
+  displayProduct(disco: IDisco): void {
+    if (this.discoForm) {
+      this.discoForm.reset();
+    }
+    this.disco = disco;
+
+    // Update the data on the form
+    this.discoForm.patchValue({
+      nombre: this.disco.nombre,
+      image: this.disco.image,
+      numEntradas: this.disco.numEntradas,
+      precio: this.disco.precio
     });
   }
+
   async onSubmit() {
     const toast = await this.toastController.create({
-      header: 'Guardar discoteca',
+      header: 'Editar Discoteca',
       position: 'top',
       buttons: [
         {
           side: 'start',
-          icon: 'save',
+          icon: 'create',
           text: 'ACEPTAR',
           handler: () => {
-            this.saveDiscoteca();
+            this.editDisco();
             this.router.navigate(['home']);
           }
         }, {
@@ -62,12 +77,39 @@ export class EditPage implements OnInit {
     });
     toast.present();
   }
-  saveDiscoteca() {
-    this.discotecadbService.remove(this.id);
-    this.discoteca = this.discotecaForm.value;
-    let nextKey = this.discoteca.name.trim();
-    this.discoteca.id = nextKey;
-    this.discotecadbService.setItem(nextKey, this.discoteca);
-    console.warn(this.discotecaForm.value);
+
+
+  editDisco() {
+    this.discodbService.remove(this.disco.id);
+    this.disco = this.discoForm.value;
+    let nextKey = this.disco.nombre.trim();
+    this.disco.id = nextKey;
+    this.discodbService.setItem(nextKey, this.disco);
+    console.warn(this.discoForm.value);
+    this.discodbService.remove(this.disco.id);
+  }
+  async removeRecord(id) {
+    const toast = await this.toastController.create({
+      header: 'Elimiar disco',
+      position: 'top',
+      buttons: [
+        {
+          side: 'start',
+          icon: 'delete',
+          text: 'ACEPTAR',
+          handler: () => {
+            this.discodbService.remove(id);
+            this.router.navigate(['home']);
+          }
+        }, {
+          text: 'CANCELAR',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        }
+      ]
+    });
+    toast.present();
   }
 }

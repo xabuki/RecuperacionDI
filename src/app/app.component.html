@@ -1,22 +1,22 @@
 <ion-app>
-  <ion-menu side="end" type="push">
-    <ion-header>
-      <ion-toolbar color="danger">
-        <ion-title>Recordatorio de Discotecas</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content>
-      <ion-list>
-        <ion-item>
-          <ion-icon name="home" slot="start"></ion-icon>
-          <ion-label [routerLink]="['home']">Recordatorio</ion-label>
-        </ion-item>
-        <ion-item>
-          <ion-icon name="add" slot="start"></ion-icon>
-          <ion-label [routerLink]="['create']">Añadir discoteca </ion-label>
-        </ion-item>
-      </ion-list>
-    </ion-content>
-  </ion-menu>
-  <ion-router-outlet main></ion-router-outlet>
+    <ion-menu type="push">
+        <ion-header>
+            <ion-toolbar color="primary">
+                <ion-title>Listado de Discotecas</ion-title>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content>
+            <ion-list>
+                <ion-item>
+                    <ion-icon name="home" slot="start"></ion-icon>
+                    <ion-label [routerLink]="['home']">Listado</ion-label>
+                </ion-item>
+                <ion-item>
+                    <ion-icon name="add" slot="start"></ion-icon>
+                    <ion-label [routerLink]="['create']">Añadir Discoteca</ion-label>
+                </ion-item>
+            </ion-list>
+        </ion-content>
+    </ion-menu>
+    <ion-router-outlet main></ion-router-outlet>
 </ion-app>

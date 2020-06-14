@@ -1,56 +1,76 @@
 import { Component, OnInit } from '@angular/core';
-import { IDiscoteca } from '../share/interfaces';
-import { DiscotecadbService } from '../core/discotecadbservice.service';
+import { IDisco } from '../share/interfaces';
+import { DiscodbService } from '../core/discodb.service';
 import { Router } from '@angular/router';
-import { DetailsPage } from '../details/details.page';
+
+
 @Component({
   selector: 'app-home',
-  templateUrl: 'home.page.html'
+  templateUrl: 'home.page.html',
+  styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
-  public discotecas: IDiscoteca[];
-  discotecasinit: IDiscoteca[] = [
+
+  public discos: IDisco[];
+  discosInit: IDisco[] = [
     {
-      id: '1',
-      name: 'Indara',
-      cover:
-        'https://owaytours.com/blog/wp-content/uploads/2019/08/discotecas-cordoba-min.jpg',
-      description: "Indara es una discoteca localizada al lado de la estacion de autobuses en pamplona"
+      id: "1",
+      nombre: "Indara",
+      image: "",
+      numEntradas: 80,
+      precio: 10
     },
     {
-      id: '2',
-      name: 'Klabe',
-      cover: 'https://www.bilbaoplan.com/wp-content/uploads/2016/04/discoteca-1.jpg',
-      description: "clave es una discoteca que se encuentra en pamplona"
+      id: "2",
+      nombre: "Klabe",
+      image: "",
+      numEntradas: 47,
+      precio: 20
+    },
+    {
+      id: "3",
+      nombre: "Totem",
+      image: "",
+      numEntradas: 52,
+      precio: 5
     }
-  ]
-  constructor(private discotecadbService: DiscotecadbService, private route:
+  ];
+
+  constructor(private discodbService: DiscodbService, private route:
     Router) { }
+
+  slideOpts = {
+    initialSlide: 1,
+    speed: 400
+  }
+
   ngOnInit(): void {
     // If the database is empty set initial values
     this.inicialization();
   }
   ionViewDidEnter() {
     // Remove elements if it already has values
-    if (this.discotecas !== undefined) {
-      this.discotecas.splice(0);
+    if (this.discos !== undefined) {
+      this.discos.splice(0);
     }
     this.retrieveValues();
   }
   inicialization() {
-    if (this.discotecadbService.empty()) {
-      this.discotecasinit.forEach(discoteca => {
-        this.discotecadbService.setItem(discoteca.id, discoteca);
+    if (this.discodbService.empty()) {
+      this.discosInit.forEach(disco => {
+        this.discodbService.setItem(disco.id, disco);
       });
     }
   }
   retrieveValues() {
     // Retrieve values
-    this.discotecadbService.getAll().then(
-      (data) => this.discotecas = data
+    this.discodbService.getAll().then(
+      (data) => this.discos = data
     );
   }
-  discotecaTapped(discoteca) {
-    this.route.navigate(['details', discoteca.id]);
+  async discoTapped(disco) {
+   this.route.navigate(['details', disco.id]);
   }
 }
+
+
