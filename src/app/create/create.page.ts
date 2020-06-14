@@ -1,29 +1,38 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { DiscotecadbService } from '../core/discotecadbservice.service';
+import { discocrudService } from '../core/discocrud.service';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
-import { IDiscoteca } from '../share/interfaces';
+import { IDisco } from '../share/interfaces';
+
+
 @Component({
   selector: 'app-create',
   templateUrl: './create.page.html',
   styleUrls: ['./create.page.scss'],
 })
 export class CreatePage implements OnInit {
-  discoteca: IDiscoteca;
- discotecaForm: FormGroup;
-  constructor(
-    private router: Router,
-    private discotecadbService: DiscotecadbService,
-    public toastController: ToastController
-  ) { }
+
+  disco: IDisco;
+  discoForm: FormGroup;
+  discoNombre: string;
+  discoImage:string;
+  discoNumEntradas:number;
+  discoPrecio:number;
+
+  constructor(private router: Router,
+    private discocrud: discocrudService,
+    public toastController: ToastController) { }
+
   ngOnInit() {
-    this.discotecaForm = new FormGroup({
-      name: new FormControl(''),
-      cover: new FormControl(''),
-      description: new FormControl(''),
+    this.discoForm = new FormGroup({
+      nombre: new FormControl(''),
+      image: new FormControl(''),
+      numEntradas: new FormControl(''),
+      precio: new FormControl(''),
     });
-  } async onSubmit() {
+  }
+  async onSubmit() {
     const toast = await this.toastController.create({
       header: 'Guardar Discoteca',
       position: 'top',
@@ -33,7 +42,7 @@ export class CreatePage implements OnInit {
           icon: 'save',
           text: 'ACEPTAR',
           handler: () => {
-            this.saveDiscoteca();
+            this.saveDisco();
             this.router.navigate(['home']);
           }
         }, {
@@ -47,11 +56,20 @@ export class CreatePage implements OnInit {
     });
     toast.present();
   }
-  saveDiscoteca() {
-    this.discoteca = this.discotecaForm.value;
-    let nextKey = this.discoteca.name.trim();
-    this.discoteca.id = nextKey;
-    this.discotecadbService.setItem(nextKey, this.discoteca);
-    console.warn(this.discotecaForm.value);
+  saveDisco() {
+    this.disco = this.discoForm.value;
+    let record = {};
+    record['nombre'] = this.disco.nombre;
+    record['numEntradas'] = this.disco.numEntradas;
+    record['image'] = this.disco.image;
+    record['precio'] = this.disco.precio;
+    this.discocrud.create_disco(record).then(resp => {
+      console.log(resp);
+    })
+      .catch(error => {
+        console.log(error);
+      });
   }
 }
+
+
